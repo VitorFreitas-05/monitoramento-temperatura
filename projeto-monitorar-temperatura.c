@@ -1,3 +1,14 @@
+/*
+- Projeto: Sistema de monitoramento de temperatura
+
+- Descrição: Simula a leitura de sensores utilizando processos, comunicação entre processos (pipe),
+threads, mutex e semáforo.
+
+- Funcionamento: O processo filho gera temperaturas aleatórias e as envia ao processo pai por meio
+de um pipe.O processo pai cria threads para analisar as temperaturas e contabiliza os alertas.
+*/
+
+
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -6,17 +17,22 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+//Contabiliza a quantidade total de alertas identificados.
 int contadorAlertas = 0;
 
+//Proteger o acesso simultâneo ao contador de alertas
 pthread_mutex_t trava = PTHREAD_MUTEX_INITIALIZER;
 
+//Limita a quantidade de threads executando ao mesmo tempo
 sem_t vagas;
 
+//Armazenar os dados de cada sensor
 typedef struct{
     int numeroSensor;
     float temperatura;
 }DadosSensor;
 
+//Analisa as temperaturas e executa as threads
 void* verificarTemperatura(void* argumento){
     DadosSensor*dados = (DadosSensor*)argumento;
     int sensor = dados->numeroSensor;
@@ -53,8 +69,9 @@ int main(){
     }
 
     pthread_t thread[3];
-    pid_t processo = fork();
+    pid_t processo = fork(); //Cria novo processo
 
+    //Processo filho que gera as temperaturas aleatórias
     if(processo == 0){
 	close(fd[0]);
 
@@ -71,7 +88,7 @@ int main(){
 
 	close(fd[1]);
 	exit(0);
-    }else if(processo > 0){
+    }else if(processo > 0){ //Processo pai que recebe as temperaturas, analisa e executa as threads
 	close(fd[1]);
 	sem_init(&vagas, 0, 2);
 

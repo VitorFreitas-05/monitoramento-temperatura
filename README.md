@@ -37,11 +37,11 @@ Quando uma temperatura ultrapassa 35 °C, o sistema gera um alerta. Ao final da 
 
 Compile o programa:
 
-gcc teste-pipe.c -o teste-pipe -pthread
+gcc projeto-monitorar-temperatura.c -o projeto-monitorar-temperatura -pthread
 
 Execute:
 
-./teste-pipe
+./projeto-monitorar-temperatura
 
 6. Resultado esperado
 
